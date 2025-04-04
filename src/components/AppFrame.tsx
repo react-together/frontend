@@ -1,7 +1,7 @@
 import React from 'react';
 import { Toolbar } from 'primereact/toolbar';
 import { LogoutButton } from './LogoutButton';
-import { FilterButton } from './FilterButton';
+import { Filters } from './Filters';
 
 export interface AppFrameProps {
   children?: React.ReactNode;
@@ -16,21 +16,21 @@ export const AppFrame: React.FC<AppFrameProps> = (props) => {
           start="React Together"
           end={
             <div className="flex items-center space-x-2">
-              <FilterButton />
               <LogoutButton />
             </div>
           }
           pt={{
             root: {
-              className: 'bg-gray-600 backdrop-blur-md flex justify-between py-2 px-4 shadow-lg',
+              className: 'bg-gray-600 backdrop-blur-md flex justify-between py-2 px-4',
             },
             start: {
               className: 'flex items-center justify-center space-x-2 text-white text-xl',
             },
           }}
         />
+        <Filters />
       </div>
-      <div className='h-18'></div>
+      <div className='h-26'></div>
       {props.children}
     </>
   );
