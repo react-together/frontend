@@ -4,7 +4,7 @@ import { Ripple } from 'primereact/ripple';
 
 export interface ChipProps {
   label: string;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
 }
 
 export const Chip: React.FC<ChipProps> = (props) => { 

@@ -30,7 +30,7 @@ export const AppFrame: React.FC<AppFrameProps> = (props) => {
         />
         <Filters />
       </div>
-      <div className='h-26'></div>
+      <div className='h-30'></div>
       {props.children}
     </>
   );

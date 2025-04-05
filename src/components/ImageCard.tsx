@@ -22,8 +22,8 @@ export const ImageCard: React.FC<ImageCardProps> = (props) => {
         <Image src={props.src} width="300" preview />
         <div className='flex flex-row'>
           {(props.categories ?? []).map((category, index) => (
-            <span className='p-1'>
-              <Tag value={category} key={index} />
+            <span className='p-1' key={index}>
+              <Tag value={category} />
             </span>
           ))}
         </div>
