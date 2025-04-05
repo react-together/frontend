@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Chip } from './Chip';
 import { Menu } from 'primereact/menu';
 import { classNames } from 'primereact/utils';
-import { DomHandler } from 'primereact/utils';
 
 export interface FilterItem {
   id: number;
@@ -14,6 +13,7 @@ export interface FilterItem {
 }
 
 export enum FilterKey {
+  NONE = 'none',
   REACTIONS = 'reactions',
   AUTHORS = 'authors',
   CATEGORIES = 'categories',
@@ -88,12 +88,6 @@ export const Filter: React.FC<FilterProps> = (props) => {
     { label: '包含', value: FilterOperator.IN, command: () => onOperatorChange(FilterOperator.IN) },
     { label: '不包含', value: FilterOperator.NOT_IN, command: () => onOperatorChange(FilterOperator.NOT_IN) },
   ]
-  const handleShow = useCallback(() => {
-    DomHandler.blockBodyScroll();
-  }, []);
-  const handleHide = useCallback(() => {
-    DomHandler.unblockBodyScroll();
-  }, []);
   return (
     <>
       {props.showConnect && (
@@ -102,19 +96,19 @@ export const Filter: React.FC<FilterProps> = (props) => {
             label={props.item.connect}
             onClick={(event) => connectMenu?.current?.toggle(event)}
           />
-          <Menu popup ref={connectMenu} model={connectOptions} onShow={handleShow} onHide={handleHide} />
+          <Menu popup ref={connectMenu} model={connectOptions} />
         </>
       )}
       <Chip
         label={keyOptions.find((item) => item.value === props.item.label)?.label ?? ''}
         onClick={(event) => keyMenu?.current?.toggle(event)}
       />
-      <Menu popup ref={keyMenu} model={keyOptions} onShow={handleShow} onHide={handleHide} />
+      <Menu popup ref={keyMenu} model={keyOptions} />
       <Chip
         label={operatorOptions.find((item) => item.value === props.item.operator)?.label ?? ''}
         onClick={(event) => operatorMenu?.current?.toggle(event)}
       />
-      <Menu popup ref={operatorMenu} model={operatorOptions} onShow={handleShow} onHide={handleHide} />
+      <Menu popup ref={operatorMenu} model={operatorOptions} />
       <Chip label={props.item.values.join(', ')} />
       <Chip label='x' onClick={() => {
         props.setPayloads((prev) => {
@@ -130,9 +124,13 @@ export interface FilterGroupProps {
   payloads: FilterItem[];
   parentId: number | null;
   setPayloads: React.Dispatch<React.SetStateAction<FilterItem[]>>;
+  showConnect: boolean;
 }
 
 export const FilterGroup: React.FC<FilterGroupProps> = (props) => {
+  const parent = useMemo(() => {
+    return props.payloads.find((item) => item.id === props.parentId);
+  }, [props.payloads, props.parentId]);
   const children = useMemo(() => {
     return props.payloads.filter((item) => item.parentId === props.parentId);
   }, [props.payloads, props.parentId]);
@@ -154,73 +152,100 @@ export const FilterGroup: React.FC<FilterGroupProps> = (props) => {
     }},
     { label: '新增 FilterGroup', command: () => {
       props.setPayloads((prev) => {
-        const max = Math.max(...prev.map((item) => item.id), 0);
-        const newItem: FilterItem = {
-          id: max + 1,
+        const maxId = Math.max(...prev.map((item) => item.id), 0);
+        const newParentItem: FilterItem = {
+          id: maxId + 1,
           parentId: props.parentId,
+          label: FilterKey.NONE,
+          operator: FilterOperator.IN,
+          connect: ConnectOprtator.AND,
+          values: []
+        }
+        const newItem: FilterItem = {
+          id: maxId + 2,
+          parentId: maxId + 1,
           label: FilterKey.REACTIONS,
           operator: FilterOperator.IN,
           connect: ConnectOprtator.AND,
           values: []
         }
-        return [...prev, newItem];
+        return [...prev, newParentItem, newItem];
       });
     } },
   ]
-  const handleShow = useCallback(() => {
-    DomHandler.blockBodyScroll();
-  }, []);
-  const handleHide = useCallback(() => {
-    DomHandler.unblockBodyScroll();
-  }, []);
+  const onConnectChange = (value: ConnectOprtator) => {
+    props.setPayloads((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === parent?.id) {
+          return { ...item, connect: value };
+        }
+        return item;
+      });
+      return updated;
+    });
+  }
+  const connectMenu = useRef<Menu | null>(null);
+  const connectOptions = [
+    { label: 'AND', value: ConnectOprtator.AND, command: () => onConnectChange(ConnectOprtator.AND) },
+    { label: 'OR', value: ConnectOprtator.OR, command: () => onConnectChange(ConnectOprtator.OR) },
+  ]
   return (
-    <div className={classNames('flex flex-row flex-wrap', {
-      'border-dotted border-color-gray-400 border-1 rounded-4xl p-1 items-baseline': children.length > 0
-    })}>
-      {children.map((item, index) => {
-        return (
-          <React.Fragment key={index}>
-            <Filter showConnect={index !== 0} item={item} setPayloads={props.setPayloads} />
-            {(children.map((child) => child.parentId).includes(item.id)) && (<FilterGroup payloads={children} setPayloads={props.setPayloads} parentId={item.id} key={index} />)}
-          </React.Fragment>
-        )
-      })}
-      {children.length > 0 && (
+    <div className='flex flex-row flex-wrap items-baseline'>
+      {props.showConnect && parent && (
         <>
-          <span className='text-gray-400'>|</span>
-          <Chip label='+' onClick={(event) => plusMenu?.current?.toggle(event)} />
-          <Menu popup ref={plusMenu} model={plusOptions} onShow={handleShow} onHide={handleHide} />
-          <Chip label='x' onClick={() => {
-            const removed = props.payloads.filter((item) => item.parentId !== props.parentId);
-            props.setPayloads(removed);
-          }} />
+          <Chip
+            label={parent.connect}
+            onClick={(event) => connectMenu?.current?.toggle(event)}
+          />
+          <Menu popup ref={connectMenu} model={connectOptions} />
         </>
       )}
+      <div className={classNames('flex flex-row flex-wrap items-baseline', {
+        'border-dotted border-color-gray-400 border-1 rounded-4xl p-1 items-baseline': children.length > 0 && props.parentId !== 0,
+      })}>
+        {children.map((item, index) => {
+          if (item.label === FilterKey.NONE) {
+            return (
+              <React.Fragment key={index}>
+                <FilterGroup showConnect={index !== 0} payloads={props.payloads} setPayloads={props.setPayloads} parentId={item.id} key={index} />
+              </React.Fragment>
+          );
+          }
+          return (
+            <Filter showConnect={index !== 0} item={item} setPayloads={props.setPayloads} key={index} />
+          )
+        })}
+        {children.length > 0 && (
+          <span className='text-gray-400'>|</span>
+        )}
+        <Chip label='+' onClick={(event) => plusMenu?.current?.toggle(event)} />
+        <Menu popup ref={plusMenu} model={plusOptions} />
+        {children.length > 0 && (
+          <Chip label='x' onClick={() => {
+            const removed = props.payloads
+              .filter((item) => item.id !== props.parentId)
+              .filter((item) => item.parentId !== props.parentId);
+            props.setPayloads(removed);
+          }} />
+        )}
+      </div>
     </div>
   )
 }
 
 export const Filters: React.FC = () => {
-  const [payloads, setPayloads] = useState<FilterItem[]>([]);
+  const [payloads, setPayloads] = useState<FilterItem[]>([{
+    id: 0,
+    parentId: null,
+    label: FilterKey.NONE,
+    operator: FilterOperator.IN,
+    connect: ConnectOprtator.AND,
+    values: []
+  }]);
   return (
     <div className='p-1 flex flex-row flex-wrap items-baseline bg-white'>
       <Chip label='篩選條件' />
-      <FilterGroup payloads={payloads} setPayloads={setPayloads} parentId={null} />
-      {payloads.length === 0 && (
-        <Chip label='+' onClick={() => {
-          setPayloads([{
-            id: 0,
-            parentId: null,
-            label: FilterKey.REACTIONS,
-            operator: FilterOperator.IN,
-            connect: ConnectOprtator.AND,
-            values: []
-          }]);
-        }} />
-      )}
-      <Chip label='reset' onClick={useCallback(() => {
-        setPayloads([]);
-      }, [])} />
+      <FilterGroup showConnect={false} payloads={payloads} setPayloads={setPayloads} parentId={0} />
     </div>
   );
 }

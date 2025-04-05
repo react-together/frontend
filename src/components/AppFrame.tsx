@@ -2,6 +2,7 @@ import React from 'react';
 import { Toolbar } from 'primereact/toolbar';
 import { LogoutButton } from './LogoutButton';
 import { Filters } from './Filters';
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 export interface AppFrameProps {
   children?: React.ReactNode;
@@ -9,8 +10,8 @@ export interface AppFrameProps {
 
 export const AppFrame: React.FC<AppFrameProps> = (props) => { 
   return (
-    <>
-      <div className='fixed top-0 left-0 w-full z-1000'>
+    <ScrollPanel style={{ width: '100%', height: '100vh' }}>
+      <div className='sticky top-0 left-0 w-full z-1000'>
         <Toolbar
           unstyled
           start="React Together"
@@ -30,8 +31,7 @@ export const AppFrame: React.FC<AppFrameProps> = (props) => {
         />
         <Filters />
       </div>
-      <div className='h-30'></div>
       {props.children}
-    </>
+    </ScrollPanel>
   );
 }
