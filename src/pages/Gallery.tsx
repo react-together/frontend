@@ -3,7 +3,7 @@ import { ImageCard } from '../components/ImageCard';
 import test from '../assets/test.jpg';
 import { AppFrame } from '../components/AppFrame';
 
-const Gallery: React.FC = () => { 
+const Gallery: React.FC = () => {
   return (
     <AppFrame>
       <div className='flex flex-row flex-wrap justify-center'>
