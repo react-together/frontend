@@ -35,7 +35,7 @@ export const ImageCard: React.FC<ImageCardProps> = (props) => {
           </div>
         </div>
         {openPreview && createPortal(
-          <Preview onClose={() => setOpenPreview(false)} />,
+          <Preview src={props.src} onClose={() => setOpenPreview(false)} />,
           document.body
         )}
         <div className='flex flex-row'>
