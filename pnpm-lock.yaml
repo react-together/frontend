@@ -11,6 +11,9 @@ dependencies:
   '@tailwindcss/vite':
     specifier: ^4.0.15
     version: 4.0.15(vite@6.2.1)
+  keycloak-js:
+    specifier: ^26.2.0
+    version: 26.2.0
   primereact:
     specifier: ^10.9.3
     version: 10.9.3(@types/react@19.0.10)(react-dom@19.0.0)(react@19.0.0)
@@ -1597,6 +1600,10 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
     dev: true
+
+  /keycloak-js@26.2.0:
+    resolution: {integrity: sha512-CrFcXTN+d6J0V/1v3Zpioys6qHNWE6yUzVVIsCUAmFn9H14GZ0vuYod+lt+SSpMgWGPuneDZBSGBAeLBFuqjsw==}
+    dev: false
 
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
