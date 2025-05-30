@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './assets/custom.css'
+import 'primeicons/primeicons.css'
 import keycloak from './keycloak'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 

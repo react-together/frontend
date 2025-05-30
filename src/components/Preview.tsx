@@ -2,8 +2,8 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { SplitButton } from 'primereact/splitbutton';
 import { Image } from 'primereact/image';
-import { DomHandler } from 'primereact/utils';
 import React, { useState } from 'react';
+import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pinch";
 
 interface PreviewProps {
   src: string;
@@ -11,7 +11,6 @@ interface PreviewProps {
 }
 
 export const Preview: React.FC<PreviewProps> = (props) => {
-  const { width } = DomHandler.getViewport();
   const [value, setValue] = useState<string>('');
   const goods = [
     {
@@ -99,10 +98,35 @@ export const Preview: React.FC<PreviewProps> = (props) => {
             </Button>
           </div>
         </div>
-        <Image
-          src={props.src}
-          width={`${width * 0.9}px`}
-        />
+        <TransformWrapper>
+          {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+              <div className='fixed z-1002 top-20 right-3'>
+                <MiniMap width={100}><Image src={props.src} /></MiniMap>
+                <div className='flex gap-2 mt-2'>
+                  <Button
+                    icon="pi pi-search-plus"
+                    onClick={() => zoomIn()}
+                    size='small'
+                  />
+                  <Button
+                    icon="pi pi-search-minus"
+                    onClick={() => zoomOut()}
+                    size='small'
+                  />
+                  <Button
+                    icon="pi pi-refresh"
+                    onClick={() => resetTransform()}
+                    size='small'
+                  />
+                </div>
+              </div>
+              <TransformComponent>
+                <Image src={props.src} />
+              </TransformComponent>
+            </>
+          )}
+        </TransformWrapper>
       </div>
     </>
   );
