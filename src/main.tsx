@@ -12,6 +12,6 @@ createRoot(document.getElementById('root')!).render(
   <RKProvider authClient={keycloak} initOptions={{ onLoad: 'login-required' }}>
     <StrictMode>
       <App />
-    </StrictMode>,
+    </StrictMode>
   </RKProvider>
 )
