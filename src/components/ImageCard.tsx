@@ -5,29 +5,35 @@ import { Tag } from 'primereact/tag';
 import { createPortal } from 'react-dom';
 import { Preview } from './Preview';
 
-export interface ImageCardProps {
+export interface ImageElement {
   src: string;
-  categories?: string[];
   fileName?: string;
   info?: string;
+  categories?: string[];
   author?: string;
+}
+
+export interface ImageCardProps {
+  images: ImageElement[];
+  index: number;
 }
 
 export const ImageCard: React.FC<ImageCardProps> = (props) => {
   const [openPreview, setOpenPreview] = useState<boolean>(false);
+  const image = props.images[props.index];
   return (
     <div className='p-2'>
-      <Fieldset legend={props.author ?? 'Nobody'} className="w-80">
+      <Fieldset legend={image.author ?? 'Nobody'} className="w-80">
         <div className="flex flex-row justify-between flex-wrap">
-          <span>{props.fileName}</span>
-          <span>{props.info}</span>
+          <span>{image.fileName}</span>
+          <span>{image.info}</span>
         </div>
         <div
           className='relative cursor-pointer'
           onClick={() => setOpenPreview(true)}
         >
           <Image
-            src={props.src}
+            src={image.src}
             width="300"
           />
           <div className='absolute bottom-0 h-[20%] inset-x-0 bg-black opacity-50 text-white text-center text-sm flex items-center justify-center'>
@@ -35,11 +41,15 @@ export const ImageCard: React.FC<ImageCardProps> = (props) => {
           </div>
         </div>
         {openPreview && createPortal(
-          <Preview src={props.src} onClose={() => setOpenPreview(false)} />,
+          <Preview
+                      images={props.images}
+                      index={props.index}
+                      onClose={() => setOpenPreview(false)}
+                    />,
           document.body
         )}
         <div className='flex flex-row'>
-          {(props.categories ?? []).map((category, index) => (
+          {(image.categories ?? []).map((category, index) => (
             <span className='p-1' key={index}>
               <Tag value={category} />
             </span>

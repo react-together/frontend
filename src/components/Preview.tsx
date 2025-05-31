@@ -4,13 +4,19 @@ import { SplitButton } from 'primereact/splitbutton';
 import { Image } from 'primereact/image';
 import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pinch";
+import { ImageElement } from './ImageCard';
+import { DomHandler } from 'primereact/utils';
 
 interface PreviewProps {
-  src: string;
+  images: ImageElement[];
+  index: number;
   onClose: () => void;
 }
 
 export const Preview: React.FC<PreviewProps> = (props) => {
+  const { height } = DomHandler.getViewport();
+  const [index, setIndex] = useState<number>(props.index);
+  const image = props.images[index];
   const [value, setValue] = useState<string>('');
   const goods = [
     {
@@ -64,7 +70,7 @@ export const Preview: React.FC<PreviewProps> = (props) => {
     <>
       <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 opacity-50 z-1000'>
       </div>
-      <div className='absolute top-0 left-0 w-full h-full flex flex-col items-center z-1001'>
+      <div className='absolute top-0 left-0 w-full h-screen flex flex-col items-center z-1001'>
         <div
           className='w-full overflow-x-auto min-h-[66px] bg-gray-600'
         >
@@ -102,8 +108,7 @@ export const Preview: React.FC<PreviewProps> = (props) => {
           {({ zoomIn, zoomOut, resetTransform }) => (
             <>
               <div className='fixed z-1002 top-20 right-3'>
-                <MiniMap width={100}><Image src={props.src} /></MiniMap>
-                <div className='flex gap-2 mt-2'>
+                <div className='flex gap-2 mb-2'>
                   <Button
                     icon="pi pi-search-plus"
                     onClick={() => zoomIn()}
@@ -120,9 +125,26 @@ export const Preview: React.FC<PreviewProps> = (props) => {
                     size='small'
                   />
                 </div>
+                <MiniMap width={100}>
+                  <img src={image.src} style={{ height: `${height - 66}px` }} />
+                </MiniMap>
+                <div className='flex gap-2 mt-2'>
+                  <Button
+                    icon="pi pi-chevron-left"
+                    onClick={() => setIndex((prev) => (prev > 0 ? prev - 1 : props.images.length - 1))}
+                    size='small'
+                  />
+                  <Button
+                    icon="pi pi-chevron-right"
+                    onClick={() => setIndex((prev) => (prev < props.images.length - 1 ? prev + 1 : 0))}
+                    size='small'
+                  />
+                </div>
               </div>
-              <TransformComponent>
-                <Image src={props.src} />
+              <TransformComponent
+                wrapperStyle={{ height: `${height - 66}px`, width: '100%' }}
+              >
+                <img src={image.src} style={{ height: `${height - 66}px` }} />
               </TransformComponent>
             </>
           )}
