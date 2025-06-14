@@ -12,24 +12,24 @@ export interface FilterItem {
   parentId: number | null;
 }
 
-export enum FilterKey {
+enum FilterKey {
   NONE = 'none',
   REACTIONS = 'reactions',
   AUTHORS = 'authors',
   CATEGORIES = 'categories',
 }
 
-export enum FilterOperator {
+enum FilterOperator {
   IN = 'IN',
   NOT_IN = 'NOT IN',
 }
 
-export enum ConnectOprtator {
+enum ConnectOprtator {
   AND = 'AND',
   OR = 'OR',
 }
 
-export interface FilterProps {
+interface FilterProps {
   item: FilterItem;
   setPayloads: React.Dispatch<React.SetStateAction<FilterItem[]>>;
   showConnect: boolean;

@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Gallery from './pages/Gallery'
 import { PrimeReactProvider } from 'primereact/api';
 import { useKeycloak } from '@react-keycloak/web';
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
 
 function App() {
   const { keycloak } = useKeycloak();
