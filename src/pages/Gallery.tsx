@@ -7,8 +7,24 @@ import test4 from '../assets/test4.png';
 import test5 from '../assets/test5.png';
 import test6 from '../assets/test6.jpg';
 import { AppFrame } from '../components/AppFrame';
+import { useQuery, gql } from '@apollo/client';
+
+const GET_ME = gql`
+  query GetUser {
+    user {
+      edges {
+        node {
+          id,
+          email
+        }
+      }
+    }
+  }
+`;
 
 const Gallery: React.FC = () => {
+  const { data, loading, error } = useQuery(GET_ME);
+
   const arr: ImageElement[] = [
     {
       src: test,
@@ -47,6 +63,12 @@ const Gallery: React.FC = () => {
       categories: ['Nature', 'Animals'],
     },
   ]
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  console.log(data.user.edges[0].node.email);
+
   return (
     <AppFrame>
       <div className='flex flex-row flex-wrap justify-center'>

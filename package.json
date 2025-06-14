@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@react-keycloak/web": "^3.4.0",
     "@react-oauth/google": "^0.12.1",
     "@tailwindcss/vite": "^4.0.15",
+    "graphql": "^16.11.0",
     "keycloak-js": "^26.2.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.3",

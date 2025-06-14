@@ -1,7 +1,6 @@
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { SplitButton } from 'primereact/splitbutton';
-import { Image } from 'primereact/image';
 import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pinch";
 import { ImageElement } from './ImageCard';
