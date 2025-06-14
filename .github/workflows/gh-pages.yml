@@ -1,4 +1,4 @@
-name: CI
+name: Publish github pages
 
 on:
   push:
@@ -28,3 +28,13 @@ jobs:
 
     - name: Build
       run: pnpm build
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        publish_branch: gh-pages
+        force_orphan: true
+        keep_files: false
+        commit_message: 'Deploy to GitHub Pages'
