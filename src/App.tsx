@@ -21,7 +21,7 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <PrimeReactProvider value={value}>
-        <BrowserRouter>
+        <BrowserRouter basename='/frontend'>
           <Routes>
             <Route path="/" element={keycloak.authenticated ? <Gallery /> : <div>驗證登入中……</div>} />
           </Routes>
