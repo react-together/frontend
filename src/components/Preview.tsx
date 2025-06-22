@@ -5,8 +5,19 @@ import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pinch";
 import { ImageElement } from './ImageCard';
 import { DomHandler } from 'primereact/utils';
+import { gql, useMutation } from '@apollo/client';
+
+const CREATE_COMMENT = gql`
+mutation CreateOneComment($data: PhotoReactionInsertInput!) {
+  photoReactionCreateOne(data: $data) {
+    comment,
+    isRecommended
+  }
+}
+`;
 
 interface PreviewProps {
+  userId: number;
   images: ImageElement[];
   index: number;
   onClose: () => void;
@@ -17,10 +28,23 @@ export const Preview: React.FC<PreviewProps> = (props) => {
   const [index, setIndex] = useState<number>(props.index);
   const image = props.images[index];
   const [value, setValue] = useState<string>('');
+  const [createComment] = useMutation(CREATE_COMMENT);
   const goods = [
     {
         label: '構圖不錯',
-        command: () => {
+        command: async () => {
+          await createComment({ 
+            variables: {
+              data: {
+                userId: props.userId,
+                photoId: image.id,
+                comment: '構圖不錯',
+                isRecommended: 1,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
+            }
+          });
         }
     },
     {

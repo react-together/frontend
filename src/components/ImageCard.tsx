@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { Preview } from './Preview';
 
 export interface ImageElement {
+  id: number;
   src: string;
   fileName?: string;
   info?: string;
@@ -14,6 +15,7 @@ export interface ImageElement {
 }
 
 export interface ImageCardProps {
+  userId: number;
   images: ImageElement[];
   index: number;
 }
@@ -42,6 +44,7 @@ export const ImageCard: React.FC<ImageCardProps> = (props) => {
         </div>
         {openPreview && createPortal(
           <Preview
+                      userId={props.userId}
                       images={props.images}
                       index={props.index}
                       onClose={() => setOpenPreview(false)}

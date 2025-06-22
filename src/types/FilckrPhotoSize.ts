@@ -1,3 +1,5 @@
+import { FlickrPhoto } from "./FlickrPhoto";
+
 export interface FlickrPhotoSize {
   flickrPhotoId: number;
   serverId: number;
@@ -5,4 +7,5 @@ export interface FlickrPhotoSize {
   suffix: string;
   width: number;
   height: number;
+  flickrPhoto: FlickrPhoto;
 }
