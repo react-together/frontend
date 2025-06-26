@@ -16,11 +16,29 @@ mutation CreateOneComment($data: PhotoReactionInsertInput!) {
 }
 `;
 
+const CREATE_TAG = gql`
+mutation CreateOneTAG($data: TagInsertInput!) {
+  tagCreateOne(data: $data) {
+    id
+  }
+}
+`;
+
 interface PreviewProps {
   userId: number;
   images: ImageElement[];
   index: number;
   onClose: () => void;
+}
+
+function generateRandomString(): string {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  let result = '';
+  for (let i = 0; i < 3; i++) {
+    const randomIndex = Math.floor(Math.random() * letters.length);
+    result += letters[randomIndex];
+  }
+  return result;
 }
 
 export const Preview: React.FC<PreviewProps> = (props) => {
@@ -29,6 +47,7 @@ export const Preview: React.FC<PreviewProps> = (props) => {
   const image = props.images[index];
   const [value, setValue] = useState<string>('');
   const [createComment] = useMutation(CREATE_COMMENT);
+  const [createTag] = useMutation(CREATE_TAG);
   const goods = [
     {
         label: '構圖不錯',
@@ -49,7 +68,17 @@ export const Preview: React.FC<PreviewProps> = (props) => {
     },
     {
         label: '攝影技巧不錯',
-        command: () => {
+        command: async () => {
+          await createTag({
+            variables: {
+              data: {
+                name: generateRandomString(),
+                description: '測試',
+                note: '測試',
+                tagType: 'photographer'
+              }
+            }
+          })
         }
     },
     {
