@@ -13,6 +13,7 @@
     "@apollo/client": "^3.13.8",
     "@react-keycloak/web": "^3.4.0",
     "@tailwindcss/vite": "^4.0.15",
+    "date-fns": "^4.1.0",
     "graphql": "^16.11.0",
     "keycloak-js": "^26.2.0",
     "primeicons": "^7.0.0",

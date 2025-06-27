@@ -6,6 +6,7 @@ import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pi
 import { ImageElement } from './ImageCard';
 import { DomHandler } from 'primereact/utils';
 import { gql, useMutation } from '@apollo/client';
+import { format } from 'date-fns';
 
 const CREATE_COMMENT = gql`
 mutation CreateOneComment($data: PhotoReactionInsertInput!) {
@@ -59,8 +60,8 @@ export const Preview: React.FC<PreviewProps> = (props) => {
                 photoId: image.id,
                 comment: '構圖不錯',
                 isRecommended: 1,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
               }
             }
           });
