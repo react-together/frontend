@@ -59,9 +59,7 @@ export const Preview: React.FC<PreviewProps> = (props) => {
                 userId: props.userId,
                 photoId: image.id,
                 comment: '構圖不錯',
-                isRecommended: 1,
-                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-                updatedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+                isRecommended: 1
               }
             }
           });
