@@ -1,4 +1,3 @@
-import { SelectButton } from 'primereact/selectbutton';
 import { Button } from 'primereact/button';
 import { AutoComplete } from 'primereact/autocomplete';
 import React, { useState } from 'react';
@@ -34,18 +33,24 @@ interface PreviewProps {
 
 export const Preview: React.FC<PreviewProps> = (props) => {
   const { height } = DomHandler.getViewport();
+  const [sending, setSending] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(props.index);
   const image = props.images[index];
-  const [isRecommended, setIsRecommended] = useState<string | null>(
-    image.reaction ? (image.reaction.isRecommended ? '正向' : '負向') : null
-  );
   const [value, setValue] = useState<string>(image.reaction?.comment ?? '');
   const [searchItems, setSearchItems] = useState<string[]>([]);
-  const [createComment] = useMutation(CREATE_COMMENT);
-  const [updateComment] = useMutation(UPDATE_COMMENT);
+  const options = {
+    refetchQueries: ['GetFlickrPhotoSizes'],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      setSending(false);
+    },
+  };
+  const [createComment] = useMutation(CREATE_COMMENT, options);
+  const [updateComment] = useMutation(UPDATE_COMMENT, options);
   const handleCreateComment = async (comment: string, isRecommended: number) => {
+    setSending(true);
     if (image.reaction) {
-      await updateComment({ 
+      await updateComment({
         variables: {
           data: {
             comment,
@@ -69,7 +74,6 @@ export const Preview: React.FC<PreviewProps> = (props) => {
         }
       });
     }
-    setValue('');
   };
   const suggestions = [
     '構圖不錯',
@@ -103,14 +107,24 @@ export const Preview: React.FC<PreviewProps> = (props) => {
                 className='z-1002'
               />
               <span className='!text-white'>以</span>
-              <SelectButton
-                value={isRecommended}
-                onChange={(e) => {
-                  setIsRecommended(e.value);
-                  handleCreateComment(value, e.value === '正向' ? 1 : 0);
-                }}
-                options={['正向', '負向']}
-              />
+              <Button
+                size='small'
+                className='!text-white'
+                loading={sending}
+                icon={image.reaction?.isRecommended ? "pi pi-check" : ""}
+                onClick={() => handleCreateComment(value, 1)}
+              >
+                正向
+              </Button>
+              <Button
+                size='small'
+                className='!text-white'
+                loading={sending}
+                icon={image.reaction ? image.reaction.isRecommended ? "" : "pi pi-check" : ""}
+                onClick={() => handleCreateComment(value, 0)}
+              >
+                負向
+              </Button>
               <span className='!text-white'>的評價送出</span>
             </div>
             <div className='flex flex-grow'></div>
