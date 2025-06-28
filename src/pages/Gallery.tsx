@@ -34,6 +34,14 @@ query GetFlickrPhotoSizes ($userId: Int) {
               isRecommended,
               comment
             }
+          },
+          tag {
+            nodes {
+              name,
+              description,
+              note,
+              tagType
+            }
           }
         }
       }
