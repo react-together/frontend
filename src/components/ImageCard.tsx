@@ -4,6 +4,7 @@ import { Fieldset } from 'primereact/fieldset';
 import { Tag } from 'primereact/tag';
 import { createPortal } from 'react-dom';
 import { Preview } from './Preview';
+import { PhotoReaction } from '../types/PhotoReaction';
 
 export interface ImageElement {
   id: number;
@@ -12,6 +13,7 @@ export interface ImageElement {
   info?: string;
   categories?: string[];
   author?: string;
+  reaction?: PhotoReaction;
 }
 
 export interface ImageCardProps {

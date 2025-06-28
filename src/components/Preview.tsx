@@ -1,12 +1,11 @@
-import { InputText } from 'primereact/inputtext';
+import { SelectButton } from 'primereact/selectbutton';
 import { Button } from 'primereact/button';
-import { SplitButton } from 'primereact/splitbutton';
+import { AutoComplete } from 'primereact/autocomplete';
 import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent, MiniMap } from "react-zoom-pan-pinch";
 import { ImageElement } from './ImageCard';
 import { DomHandler } from 'primereact/utils';
 import { gql, useMutation } from '@apollo/client';
-import { format } from 'date-fns';
 
 const CREATE_COMMENT = gql`
 mutation CreateOneComment($data: PhotoReactionInsertInput!) {
@@ -17,10 +16,11 @@ mutation CreateOneComment($data: PhotoReactionInsertInput!) {
 }
 `;
 
-const CREATE_TAG = gql`
-mutation CreateOneTAG($data: TagInsertInput!) {
-  tagCreateOne(data: $data) {
-    id
+const UPDATE_COMMENT = gql`
+mutation UpdateOneComment($data: PhotoReactionUpdateInput!, $filter: PhotoReactionFilterInput!) {
+  photoReactionUpdate(data: $data, filter: $filter) {
+    comment,
+    isRecommended
   }
 }
 `;
@@ -32,90 +32,54 @@ interface PreviewProps {
   onClose: () => void;
 }
 
-function generateRandomString(): string {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  for (let i = 0; i < 3; i++) {
-    const randomIndex = Math.floor(Math.random() * letters.length);
-    result += letters[randomIndex];
-  }
-  return result;
-}
-
 export const Preview: React.FC<PreviewProps> = (props) => {
   const { height } = DomHandler.getViewport();
   const [index, setIndex] = useState<number>(props.index);
   const image = props.images[index];
-  const [value, setValue] = useState<string>('');
+  const [isRecommended, setIsRecommended] = useState<string | null>(
+    image.reaction ? (image.reaction.isRecommended ? '正向' : '負向') : null
+  );
+  const [value, setValue] = useState<string>(image.reaction?.comment ?? '');
+  const [searchItems, setSearchItems] = useState<string[]>([]);
   const [createComment] = useMutation(CREATE_COMMENT);
-  const [createTag] = useMutation(CREATE_TAG);
-  const goods = [
-    {
-        label: '構圖不錯',
-        command: async () => {
-          await createComment({ 
-            variables: {
-              data: {
-                userId: props.userId,
-                photoId: image.id,
-                comment: '構圖不錯',
-                isRecommended: 1
-              }
-            }
-          });
+  const [updateComment] = useMutation(UPDATE_COMMENT);
+  const handleCreateComment = async (comment: string, isRecommended: number) => {
+    if (image.reaction) {
+      await updateComment({ 
+        variables: {
+          data: {
+            comment,
+            isRecommended
+          },
+          filter: {
+            userId: { eq: props.userId },
+            photoId: { eq: image.id }
+          }
         }
-    },
-    {
-        label: '攝影技巧不錯',
-        command: async () => {
-          await createTag({
-            variables: {
-              data: {
-                name: generateRandomString(),
-                description: '測試',
-                note: '測試',
-                tagType: 'photographer'
-              }
-            }
-          })
+      });
+    } else {
+      await createComment({ 
+        variables: {
+          data: {
+            userId: props.userId,
+            photoId: image.id,
+            comment,
+            isRecommended
+          }
         }
-    },
-    {
-        label: '主題選擇不錯',
-        command: () => {
-            
-        }
-    },
-    {
-        label: '內容充實',
-        command: () => {
-            
-        }
+      });
     }
-  ];
-  const bads = [
-    {
-        label: '構圖不好',
-        command: () => {
-        }
-    },
-    {
-        label: '過曝',
-        command: () => {
-        }
-    },
-    {
-        label: '失焦',
-        command: () => {
-            
-        }
-    },
-    {
-        label: '光線不足',
-        command: () => {
-            
-        }
-    }
+    setValue('');
+  };
+  const suggestions = [
+    '構圖不錯',
+    '攝影技巧不錯',
+    '主題選擇不錯',
+    '內容充實',
+    '構圖不好',
+    '過曝',
+    '失焦',
+    '光線不足',
   ];
   return (
     <>
@@ -127,22 +91,26 @@ export const Preview: React.FC<PreviewProps> = (props) => {
         >
           <div className='flex h-full ml-2 min-w-[700px]'>
             <div className='flex h-full items-center gap-2'>
-              <SplitButton label="我喜歡" icon="pi pi-plus" model={goods} size="small" />
-              <SplitButton label="影象模糊" icon="pi pi-plus" model={bads} size="small" />
-              <InputText value={value} onChange={(e) => setValue(e.target.value)} placeholder='其他想法' className='z-1002' />
+              <AutoComplete
+                suggestions={searchItems}
+                value={value}
+                onChange={(e) => setValue(e.value)}
+                completeMethod={(e) => {
+                  setSearchItems(suggestions.filter(item => item.includes(e.query)));
+                }}
+                dropdown
+                placeholder='建議'
+                className='z-1002'
+              />
               <span className='!text-white'>以</span>
-              <Button
-                size='small'
-                className='!text-white'
-              >
-                正向
-              </Button>
-              <Button
-                size='small'
-                className='!text-white'
-              >
-                負向
-              </Button>
+              <SelectButton
+                value={isRecommended}
+                onChange={(e) => {
+                  setIsRecommended(e.value);
+                  handleCreateComment(value, e.value === '正向' ? 1 : 0);
+                }}
+                options={['正向', '負向']}
+              />
               <span className='!text-white'>的評價送出</span>
             </div>
             <div className='flex flex-grow'></div>

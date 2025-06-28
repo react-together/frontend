@@ -1,4 +1,10 @@
+import { PhotoReaction } from "./PhotoReaction";
+
 export interface FlickrPhoto {
-  flickrId: number;
+  photo: {
+    photoReaction: {
+      nodes: PhotoReaction[];
+    };
+  };
   photoId: number;
 }

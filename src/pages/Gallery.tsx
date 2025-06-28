@@ -42,6 +42,18 @@ query GetFlickrPhotoSizes ($userId: Int) {
 }
 `;
 
+const GET_SECHEMA = gql`
+query GetSchema {
+  __schema {
+    types {
+      name
+      kind
+      description
+    }
+  }
+}
+`;
+
 const Gallery: React.FC = () => {
   const { keycloak } = useKeycloak();
   const { data: me, loading: meLoading, error: meError } = useQuery(GET_ME, {
@@ -52,17 +64,20 @@ const Gallery: React.FC = () => {
     variables: { userId: me?.user?.nodes[0]?.id },
     skip: !me,
   });
+  const { data: schemaData, loading: schemaLoading, error: schemaError } = useQuery(GET_SECHEMA);
 
-  if (loading || meLoading) return <p>Loading...</p>;
-  if (error || meError) return <p>Error: {[error?.message, meError?.message].join('.')}</p>;
+  if (loading || meLoading || schemaLoading) return <p>Loading...</p>;
+  if (error || meError || schemaError) return <p>Error: {[error?.message, meError?.message, schemaError?.message].join('.')}</p>;
 
   console.log(data);
+  console.log(schemaData);
 
   const arr: ImageElement[] = data.flickrPhotoSize.nodes.map((item: FlickrPhotoSize) => ({
     id: item.flickrPhoto.photoId,
     src: `https://live.staticflickr.com/${item.serverId}/${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
     fileName: `${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
     categories: ['Nature', 'Animals'],
+    reaction: item.flickrPhoto.photo.photoReaction.nodes[0]
   }));
 
   return (
