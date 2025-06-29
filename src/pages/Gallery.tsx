@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageCard, ImageElement } from '../components/ImageCard';
 import { AppFrame } from '../components/AppFrame';
 import { useQuery, gql } from '@apollo/client';
 import { FlickrPhotoSize } from '../types/FilckrPhotoSize';
 import { useKeycloak } from '@react-keycloak/web';
 import { Tag } from '../types/Tag';
+import { ConnectOprtator, FilterItem, FilterKey, FilterOperator } from '../types/FilterItem';
+import { FilterContext } from '../components/FilterContext';
 
 const GET_ME = gql`
 query GetMe ($sub: String!) {
@@ -53,6 +55,14 @@ query GetFlickrPhotoSizes ($userId: Int) {
 `;
 
 const Gallery: React.FC = () => {
+  const [filters, setFilters] = useState<FilterItem[]>([{
+      id: 0,
+      parentId: null,
+      label: FilterKey.NONE,
+      operator: FilterOperator.IN,
+      connect: ConnectOprtator.AND,
+      values: []
+    }]);
   const { keycloak } = useKeycloak();
   const { data: me, loading: meLoading, error: meError } = useQuery(GET_ME, {
     variables: { sub: keycloak.subject },
@@ -79,18 +89,20 @@ const Gallery: React.FC = () => {
     }));
 
   return (
-    <AppFrame>
-      <div className='flex flex-row flex-wrap justify-center'>
-        {arr.map((_, index) => (
-          <ImageCard
-            userId={me.user.nodes[0].id}
-            images={arr}
-            index={index}
-            key={index}
-          />
-        ))}
-      </div>
-    </AppFrame>
+    <FilterContext.Provider value={{ payloads: filters, setPayloads: setFilters }}>
+      <AppFrame>
+        <div className='flex flex-row flex-wrap justify-center'>
+          {arr.map((_, index) => (
+            <ImageCard
+              userId={me.user.nodes[0].id}
+              images={arr}
+              index={index}
+              key={index}
+            />
+          ))}
+        </div>
+      </AppFrame>
+    </FilterContext.Provider>
   );
 }
 

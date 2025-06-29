@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Chip } from './Chip';
 import { FilterGroup } from './FilterGroup';
-import { ConnectOprtator, FilterItem, FilterKey, FilterOperator } from '../types/FilterItem';
+import { FilterContext } from './FilterContext';
 
 export const Filters: React.FC = () => {
-  const [payloads, setPayloads] = useState<FilterItem[]>([{
-    id: 0,
-    parentId: null,
-    label: FilterKey.NONE,
-    operator: FilterOperator.IN,
-    connect: ConnectOprtator.AND,
-    values: []
-  }]);
+  const context = useContext(FilterContext);
+  if (context === null) {
+    throw new Error('Filters must be used within a FilterContext provider');
+  }
+  const { payloads, setPayloads } = context;
   return (
     <div className='p-1 flex flex-row flex-wrap items-baseline bg-white'>
       <Chip label='篩選條件' />

@@ -8,7 +8,7 @@ export interface AppFrameProps {
   children?: React.ReactNode;
 }
 
-export const AppFrame: React.FC<AppFrameProps> = (props) => { 
+const Component: React.FC<AppFrameProps> = (props) => { 
   return (
     <ScrollPanel style={{ width: '100%', height: '100vh' }}>
       <div className='sticky top-0 left-0 w-full z-1000'>
@@ -35,3 +35,5 @@ export const AppFrame: React.FC<AppFrameProps> = (props) => {
     </ScrollPanel>
   );
 }
+
+export const AppFrame = React.memo(Component);
