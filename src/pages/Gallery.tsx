@@ -4,6 +4,7 @@ import { AppFrame } from '../components/AppFrame';
 import { useQuery, gql } from '@apollo/client';
 import { FlickrPhotoSize } from '../types/FilckrPhotoSize';
 import { useKeycloak } from '@react-keycloak/web';
+import { Tag } from '../types/Tag';
 
 const GET_ME = gql`
 query GetMe ($sub: String!) {
@@ -37,6 +38,7 @@ query GetFlickrPhotoSizes ($userId: Int) {
           },
           tag {
             nodes {
+              id,
               name,
               description,
               note,
@@ -66,13 +68,15 @@ const Gallery: React.FC = () => {
 
   console.log(data);
 
-  const arr: ImageElement[] = data.flickrPhotoSize.nodes.map((item: FlickrPhotoSize) => ({
-    id: item.flickrPhoto.photoId,
-    src: `https://live.staticflickr.com/${item.serverId}/${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
-    fileName: `${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
-    categories: ['Nature', 'Animals'],
-    reaction: item.flickrPhoto.photo.photoReaction.nodes[0]
-  }));
+  const arr: ImageElement[] = data.flickrPhotoSize.nodes
+    .map((item: FlickrPhotoSize) => ({
+      id: item.flickrPhoto.photoId,
+      src: `https://live.staticflickr.com/${item.serverId}/${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
+      fileName: `${item.flickrPhotoId}_${item.secret}_${item.suffix}.jpg`,
+      author: item.flickrPhoto.photo.tag.nodes.find((tag: Tag) => tag.tagType === 'photographer')?.name ?? 'Nobody',
+      categories: item.flickrPhoto.photo.tag.nodes.filter((item: Tag) => item.tagType === 'category').map((item: Tag) => item.name) ?? [],
+      reaction: item.flickrPhoto.photo.photoReaction.nodes[0]
+    }));
 
   return (
     <AppFrame>

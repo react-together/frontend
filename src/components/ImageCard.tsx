@@ -5,6 +5,7 @@ import { Tag } from 'primereact/tag';
 import { createPortal } from 'react-dom';
 import { Preview } from './Preview';
 import { PhotoReaction } from '../types/PhotoReaction';
+import { Tag as ITag } from '../types/Tag';
 
 export interface ImageElement {
   id: number;
@@ -54,6 +55,15 @@ export const ImageCard: React.FC<ImageCardProps> = (props) => {
           document.body
         )}
         <div className='flex flex-row'>
+          {image.reaction?.comment !== undefined && (
+            <span className='p-1'>
+              {image.reaction.isRecommended ? (
+                <Tag className="mr-2" severity='success' icon="pi pi-thumbs-up" value={image.reaction.comment} />
+              ) : (
+                <Tag className="mr-2" severity='danger' icon="pi pi-thumbs-down" value={image.reaction.comment} />
+              )}
+            </span>
+          )}
           {(image.categories ?? []).map((category, index) => (
             <span className='p-1' key={index}>
               <Tag value={category} />
