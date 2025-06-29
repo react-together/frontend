@@ -5,7 +5,6 @@ import { Tag } from 'primereact/tag';
 import { createPortal } from 'react-dom';
 import { Preview } from './Preview';
 import { PhotoReaction } from '../types/PhotoReaction';
-import { Tag as ITag } from '../types/Tag';
 
 export interface ImageElement {
   id: number;
