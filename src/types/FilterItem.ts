@@ -8,7 +8,7 @@ export interface FilterItem {
 }
 
 export enum FilterKey {
-  NONE = 'none',
+  GROUP = 'group',
   REACTIONS = 'reactions',
   AUTHORS = 'authors',
   CATEGORIES = 'categories',

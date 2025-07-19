@@ -41,7 +41,7 @@ export const FilterGroup: React.FC<FilterGroupProps> = (props) => {
         const newParentItem: FilterItem = {
           id: maxId + 1,
           parentId: props.parentId,
-          label: FilterKey.NONE,
+          label: FilterKey.GROUP,
           operator: FilterOperator.IN,
           connect: ConnectOprtator.AND,
           values: []
@@ -89,7 +89,7 @@ export const FilterGroup: React.FC<FilterGroupProps> = (props) => {
         'border-dotted border-color-gray-400 border-1 rounded-4xl p-1 items-baseline': children.length > 0 && props.parentId !== 0,
       })}>
         {children.map((item, index) => {
-          if (item.label === FilterKey.NONE) {
+          if (item.label === FilterKey.GROUP) {
             return (
               <React.Fragment key={index}>
                 <FilterGroup showConnect={index !== 0} payloads={props.payloads} setPayloads={props.setPayloads} parentId={item.id} key={index} />

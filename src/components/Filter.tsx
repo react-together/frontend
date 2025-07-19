@@ -63,7 +63,7 @@ export const Filter: React.FC<FilterProps> = (props) => {
     props.setPayloads((prev) => {
       const updated = prev.map((item) => {
         if (item.id === props.item.id) {
-          return { ...item, label: value };
+          return { ...item, label: value, values: [] };
         }
         return item;
       });
